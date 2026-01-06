@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using Models.Request;
 using TreasuryApi.Provider;
 
 namespace TreasuryApi.Service.Auth

@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Providers;
+using Providers.User;
+using Services.User;
 using TreasuryApi.Provider;
 using TreasuryApi.Service.Auth;
 
@@ -14,6 +17,8 @@ builder.Services.AddSwaggerGen();
 // Services
 builder.Services.AddSingleton<TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserProvider, UserProvider>();
 
 //auth scheme
 builder.Services.AddAuthorization();
@@ -34,7 +39,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-//swagger config bearer token
+// Add Dapper context
+builder.Services.AddSingleton<SqlConnectionFactory>();
+
+// Swagger config bearer token
 builder.Services.AddSwaggerGen(c =>
 {
     // Add JWT Authentication to Swagger
@@ -64,17 +72,31 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Allow ALL CORS (not safe for production!)
+builder.Services.AddCors(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+var app = builder.Build();
+app.UseCors("AllowAll");
+// Configure the HTTP request pipeline.
+//if (app.Environment.IsDevelopment())
+//{
+//    app.UseSwagger();
+//    app.UseSwaggerUI();
+//}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
