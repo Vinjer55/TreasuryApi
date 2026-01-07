@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Providers;
+using Providers.Corporation;
 using Providers.User;
+using Services.Corporation;
 using Services.User;
 using StackExchange.Redis;
 using TreasuryApi.Provider;
@@ -25,6 +27,8 @@ builder.Services.AddSingleton<TokenProvider>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddScoped<ICorporationService, CorporationService>();
+builder.Services.AddScoped<ICorporationProvider, CorporationProvider>();
 
 //auth scheme
 builder.Services.AddAuthorization();

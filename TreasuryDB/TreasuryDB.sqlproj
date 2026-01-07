@@ -59,6 +59,7 @@
     <Folder Include="Table" />
     <Folder Include="StoredProcedure" />
     <Folder Include="StoredProcedure\User" />
+    <Folder Include="StoredProcedure\Corporation" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Table\AppUser.sql" />
@@ -69,5 +70,12 @@
     <Build Include="StoredProcedure\User\Get_UserByEmail.sql" />
     <Build Include="StoredProcedure\User\Get_UserById.sql" />
     <Build Include="StoredProcedure\User\Update_AppUser.sql" />
+    <Build Include="StoredProcedure\Corporation\Get_CorpByName.sql" />
+    <Build Include="StoredProcedure\Corporation\Create_Corporation.sql" />
+    <Build Include="StoredProcedure\Corporation\Add_UserToCorp.sql" />
+    <Build Include="StoredProcedure\Corporation\Get_AllCorpUsers.sql" />
+    <Build Include="StoredProcedure\User\Update_Corp.sql" />
+    <Build Include="StoredProcedure\User\Update_Role.sql" />
+    <Build Include="StoredProcedure\Corporation\Delete_CorpById.sql" />
   </ItemGroup>
 </Project>

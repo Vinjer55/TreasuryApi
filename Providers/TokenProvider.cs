@@ -36,6 +36,9 @@ namespace TreasuryApi.Provider
             if (User.AccountId.HasValue)
                 claims.Add(new Claim("AccountId", User.AccountId.Value.ToString()));
 
+            if (!string.IsNullOrEmpty(User.Role))
+                claims.Add(new Claim(ClaimTypes.Role, User.Role));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),

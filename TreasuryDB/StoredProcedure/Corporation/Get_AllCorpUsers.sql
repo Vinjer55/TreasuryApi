@@ -1,12 +1,11 @@
-﻿CREATE PROCEDURE [dbo].[Get_UserByPhone]
-	 @Phone NVARCHAR(50)
+﻿CREATE PROCEDURE [dbo].[Get_AllCorpUsers]
+	@CorporationId INT
 AS
 BEGIN
     SET NOCOUNT ON;
 
     SELECT [Id],
            [CorporationId],
-           [AccountId],
            [Name],
            [Email],
            [Phone],
@@ -15,5 +14,5 @@ BEGIN
            [Verified],
            [IsActive]
     FROM [dbo].[AppUser]
-    WHERE [Phone] = @Phone;
+    WHERE [CorporationId] = @CorporationId;
 END;

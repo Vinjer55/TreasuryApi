@@ -9,6 +9,8 @@ namespace Providers.User
         Task<AppUser> GetUserByEmail(string email);
         Task<AppUser> GetUserById(int id);
         Task<AppUser> GetUserByPhone(string phone);
+        Task UpdateCorp(string corporationId);
+        Task UpdateRole(string userId, string role);
         Task UpdateUser(AppUser user);
     }
 }

@@ -7,6 +7,7 @@
     [Email] NVARCHAR(50) NOT NULL, 
     [Phone] NVARCHAR(50) NULL, 
     [Password] NVARCHAR(255) NOT NULL, 
+    [Role] NVARCHAR(50) NULL,
     [Verified] BIT NOT NULL DEFAULT ((0)), 
     [IsActive] BIT NOT NULL DEFAULT ((1)),
 

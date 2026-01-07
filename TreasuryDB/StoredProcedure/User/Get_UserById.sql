@@ -11,6 +11,7 @@ BEGIN
            [Email],
            [Phone],
            [Password],
+           [Role],
            [Verified],
            [IsActive]
     FROM [dbo].[AppUser]

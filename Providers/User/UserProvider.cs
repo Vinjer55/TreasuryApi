@@ -95,5 +95,40 @@ namespace Providers.User
                 );
             }
         }
+
+        public async Task UpdateCorp(string corporationId)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var parameters = new
+                {
+                    CorporationId = corporationId
+                };
+
+                await conn.ExecuteAsync(
+                    "Update_Corp",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
+
+        public async Task UpdateRole(string userId, string role)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var parameters = new
+                {
+                    AppUserId = userId,
+                    Role = role
+                };
+
+                await conn.ExecuteAsync(
+                    "Update_Role",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
     }
 }
