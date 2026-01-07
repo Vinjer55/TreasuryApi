@@ -59,5 +59,41 @@ namespace Providers.User
                 return User;
             }
         }
+
+        public async Task<AppUser> GetUserById(int id)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var User = await conn.QueryFirstOrDefaultAsync<AppUser>(
+                    "Get_UserById",
+                    new
+                    {
+                        id
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+                return User;
+            }
+        }
+
+        public async Task UpdateUser(AppUser user)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var parameters = new
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    Phone = user.Phone
+                };
+
+                await conn.ExecuteAsync(
+                    "Update_AppUser",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
     }
 }

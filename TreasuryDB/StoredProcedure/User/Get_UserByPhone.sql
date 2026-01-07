@@ -6,7 +6,7 @@ BEGIN
 
     SELECT [Id],
            [CorporationId],
-           [AccountId]
+           [AccountId],
            [Name],
            [Email],
            [Phone],

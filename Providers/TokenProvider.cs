@@ -16,23 +16,37 @@ namespace TreasuryApi.Provider
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Email, User.Email ?? string.Empty),
+                new Claim("UserId", User.Id.ToString()),
+                new Claim("Verified", User.Verified.ToString()),
+                new Claim("IsActive", User.IsActive.ToString()),
+            };
+
+            if (!string.IsNullOrEmpty(User.Phone))
+                claims.Add(new Claim("Phone", User.Phone));
+
+            if (!string.IsNullOrEmpty(User.Name))
+                claims.Add(new Claim("Name", User.Name));
+
+            if (User.CorporationId.HasValue)
+                claims.Add(new Claim("CorpId", User.CorporationId.Value.ToString()));
+
+            if (User.AccountId.HasValue)
+                claims.Add(new Claim("AccountId", User.AccountId.Value.ToString()));
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
-                new Claim(JwtRegisteredClaimNames.Email, User.Email),
-                new Claim("userId","1")
-                // Add other claims as needed
-            }),
-                Expires = DateTime.UtcNow.AddDays(1), // Token expiration time
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = credentials,
                 Issuer = configuration["Jwt:Issuer"],
                 Audience = configuration["Jwt:Audience"]
             };
 
             var handler = new JsonWebTokenHandler();
-            string token = handler.CreateToken(tokenDescriptor);
-            return token;
+            return handler.CreateToken(tokenDescriptor);
         }
     }
 }

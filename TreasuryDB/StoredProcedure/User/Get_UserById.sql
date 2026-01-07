@@ -1,5 +1,5 @@
-﻿CREATE PROCEDURE [dbo].[Get_UserByEmail]
-    @Email NVARCHAR(50)
+﻿CREATE PROCEDURE [dbo].[Get_UserById]
+    @Id INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -14,5 +14,5 @@ BEGIN
            [Verified],
            [IsActive]
     FROM [dbo].[AppUser]
-    WHERE [Email] = @Email;
+    WHERE [Id] = @Id;
 END;

@@ -7,6 +7,8 @@ namespace Providers.User
     {
         Task<int> CreateUser(RegisterRequest user);
         Task<AppUser> GetUserByEmail(string email);
+        Task<AppUser> GetUserById(int id);
         Task<AppUser> GetUserByPhone(string phone);
+        Task UpdateUser(AppUser user);
     }
 }
