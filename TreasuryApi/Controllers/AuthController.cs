@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.Request;
 using Services.User;
+using System.IdentityModel.Tokens.Jwt;
 using TreasuryApi.Service.Auth;
 
 namespace TreasuryApi.Controllers
@@ -26,7 +27,14 @@ namespace TreasuryApi.Controllers
         {
             var token = await _authService.LoginAuth(request);
 
-            // Simulate successful login
+            // Decode the JWT
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            // Get userId from claims (depending on how you generated it)
+            var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+
+            // Return the token
             return Ok(token);
         }
 

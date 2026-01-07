@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using Models.Request;
+using Models.DBModel;
 using System.Security.Claims;
 using System.Text;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -10,7 +10,7 @@ namespace TreasuryApi.Provider
 {
     public class TokenProvider(IConfiguration configuration)
     {
-        public async Task<string> Create(LoginRequest User)
+        public async Task<string> Create(AppUser User)
         {
             string secretKey = configuration["Jwt:SecretKey"];
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

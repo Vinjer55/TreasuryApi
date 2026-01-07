@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Models.DBModel;
 using Models.Request;
 using System.Data;
 
@@ -26,6 +27,36 @@ namespace Providers.User
                 );
 
                 return newId;
+            }
+        }
+        public async Task<AppUser> GetUserByPhone(string phone)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var User = await conn.QuerySingleOrDefaultAsync<AppUser>(
+                    "Get_UserByPhone",
+                    new
+                    {
+                        phone
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+                return User;
+            }
+        }
+        public async Task<AppUser> GetUserByEmail(string email)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var User = await conn.QuerySingleOrDefaultAsync<AppUser>(
+                    "Get_UserByEmail",
+                    new
+                    {
+                        email
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+                return User;
             }
         }
     }

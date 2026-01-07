@@ -2,12 +2,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Providers;
 using Providers.User;
 using Services.User;
+using StackExchange.Redis;
 using TreasuryApi.Provider;
 using TreasuryApi.Service.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Cache
+builder.Services.AddStackExchangeRedisCache(redisOption =>
+{
+    redisOption.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

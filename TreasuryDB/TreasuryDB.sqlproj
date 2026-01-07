@@ -65,5 +65,7 @@
     <Build Include="Table\Corporation.sql" />
     <Build Include="Table\Account.sql" />
     <Build Include="StoredProcedure\User\Create_AppUser.sql" />
+    <Build Include="StoredProcedure\User\Get_UserByPhone.sql" />
+    <Build Include="StoredProcedure\User\Get_UserByEmail.sql" />
   </ItemGroup>
 </Project>

@@ -13,6 +13,7 @@ namespace Services.User
 
         public async Task<int> CreateUser(RegisterRequest user)
         {
+            user.Password = BC.EnhancedHashPassword(user.Password, 13);
             int userId = await _userProvider.CreateUser(user);
             return userId;
         }
