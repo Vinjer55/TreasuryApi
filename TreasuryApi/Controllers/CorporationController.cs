@@ -38,6 +38,7 @@ namespace TreasuryApi.Controllers
             return Unauthorized("Invalid authentication method.");
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet("Users")]
         public async Task<IActionResult> GetOrgUsers()
         {
@@ -59,6 +60,7 @@ namespace TreasuryApi.Controllers
             return Unauthorized("Invalid authentication method.");
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpDelete]
         public async Task<IActionResult> DeleteCorp()
         {

@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Middleware;
 using Providers;
 using Providers.Corporation;
 using Providers.User;
@@ -20,38 +22,6 @@ builder.Services.AddStackExchangeRedisCache(redisOption =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// Services
-builder.Services.AddSingleton<TokenProvider>();
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IUserProvider, UserProvider>();
-builder.Services.AddScoped<ICorporationService, CorporationService>();
-builder.Services.AddScoped<ICorporationProvider, CorporationProvider>();
-
-//auth scheme
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
-{
-    x.RequireHttpsMetadata = false;
-    x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
-            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
-        ClockSkew = TimeSpan.Zero // Optional: Set clock skew to zero for immediate expiration
-    };
-});
-
-// Add Dapper context
-builder.Services.AddSingleton<SqlConnectionFactory>();
-
 // Swagger config bearer token
 builder.Services.AddSwaggerGen(c =>
 {
@@ -81,6 +51,47 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+// Services
+builder.Services.AddSingleton<TokenProvider>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserProvider, UserProvider>();
+builder.Services.AddScoped<ICorporationService, CorporationService>();
+builder.Services.AddScoped<ICorporationProvider, CorporationProvider>();
+
+//auth scheme
+//auth scheme
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
+{
+    x.RequireHttpsMetadata = false;
+    x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
+        ClockSkew = TimeSpan.Zero // Optional: Set clock skew to zero for immediate expiration
+    };
+});
+
+// Add Dapper context
+builder.Services.AddSingleton<SqlConnectionFactory>();
+
+// add Custom Authorization
+builder.Services.AddSingleton<
+    IAuthorizationMiddlewareResultHandler,
+    CustomAuthorizationResultHandler>();
 
 // Allow ALL CORS (not safe for production!)
 builder.Services.AddCors(options =>
