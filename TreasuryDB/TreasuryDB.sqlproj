@@ -60,6 +60,7 @@
     <Folder Include="StoredProcedure" />
     <Folder Include="StoredProcedure\User" />
     <Folder Include="StoredProcedure\Corporation" />
+    <Folder Include="StoredProcedure\Account" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Table\AppUser.sql" />
@@ -77,5 +78,7 @@
     <Build Include="StoredProcedure\User\Update_Corp.sql" />
     <Build Include="StoredProcedure\User\Update_Role.sql" />
     <Build Include="StoredProcedure\Corporation\Delete_CorpById.sql" />
+    <Build Include="StoredProcedure\Account\Create_Account.sql" />
+    <Build Include="StoredProcedure\Account\Check_AccountExist.sql" />
   </ItemGroup>
 </Project>

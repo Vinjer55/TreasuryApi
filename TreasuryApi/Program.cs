@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Middleware;
 using Providers;
+using Providers.Account;
 using Providers.Corporation;
 using Providers.User;
+using Services.Account;
 using Services.Corporation;
 using Services.User;
 using StackExchange.Redis;
@@ -59,6 +61,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserProvider, UserProvider>();
 builder.Services.AddScoped<ICorporationService, CorporationService>();
 builder.Services.AddScoped<ICorporationProvider, CorporationProvider>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IAccountProvider, AccountProvider>();
 
 //auth scheme
 //auth scheme

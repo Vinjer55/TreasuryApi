@@ -11,6 +11,5 @@
     [Verified] BIT NOT NULL DEFAULT ((0)), 
     [IsActive] BIT NOT NULL DEFAULT ((1)),
 
-    CONSTRAINT [FK_AppUser_Corporation] FOREIGN KEY ([CorporationId]) REFERENCES [dbo].[Corporation] ([Id]),
-    CONSTRAINT [FK_AppUser_Account] FOREIGN KEY ([AccountId]) REFERENCES [dbo].[Account] ([Id])
+    CONSTRAINT [FK_AppUser_Corporation] FOREIGN KEY ([CorporationId]) REFERENCES [dbo].[Corporation] ([Id])
 )
