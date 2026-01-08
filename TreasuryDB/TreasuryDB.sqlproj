@@ -80,5 +80,9 @@
     <Build Include="StoredProcedure\Corporation\Delete_CorpById.sql" />
     <Build Include="StoredProcedure\Account\Create_Account.sql" />
     <Build Include="StoredProcedure\Account\Check_AccountExist.sql" />
+    <Build Include="StoredProcedure\Account\Get_AccountByUserId.sql" />
+    <Build Include="StoredProcedure\Account\Get_AccountById.sql" />
+    <Build Include="StoredProcedure\Account\Update_Account.sql" />
+    <Build Include="StoredProcedure\Account\Delete_Account.sql" />
   </ItemGroup>
 </Project>

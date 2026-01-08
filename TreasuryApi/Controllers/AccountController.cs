@@ -31,5 +31,65 @@ namespace TreasuryApi.Controllers
 
             return Unauthorized("Invalid authentication method.");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAccounts()
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var result = await _accountService.GetAccounts(userId);
+                return Ok(result);
+            }
+
+            return Unauthorized("Invalid authentication method.");
+
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAccount(int id, UpdateAccount card)
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+
+            // Validate Id
+            if (id == null)
+                return BadRequest("Id is required");
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _accountService.UpdateAccount(userId, id, card);
+                return Ok("Account updated successfully");
+            }
+
+            return Unauthorized("Invalid authentication method.");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAccount(int id)
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                await _accountService.DeleteAccount(id);
+                return Ok(new { Message = "Account deleted successfully." });
+            }
+
+            return Unauthorized("Invalid authentication method.");
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAccountById(int id)
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+
+            var result = await _accountService.GetAccountById(id);
+            return Ok(result);
+        }
     }
 }

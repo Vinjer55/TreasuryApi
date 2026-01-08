@@ -7,5 +7,9 @@ namespace Providers.Account
     {
         Task<AccountModel> CheckAccountExist(string userId, CreateAccountRequest request);
         Task<int> CreateAccount(string userId, CreateAccountRequest request);
+        Task<IEnumerable<AccountModel>> GetAccountsByUserId(string userId);
+        Task<AccountModel> GetAccountById(int id);
+        Task UpdateAccount(AccountModel account);
+        Task DeleteAccount(int accountId);
     }
 }
