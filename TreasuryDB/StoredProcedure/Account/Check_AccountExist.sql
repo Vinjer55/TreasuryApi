@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Check_AccountExist]
     @AppUserId INT,
-    @AccountType NVARCHAR(20),
+    @AccountKind  NVARCHAR(20),
+    @AssetType   NVARCHAR(10),
     @CurrencyCode NVARCHAR(10),
     @Provider NVARCHAR(50)
 AS
@@ -9,13 +10,14 @@ BEGIN
 
     SELECT [Id],
            [AppUserId],
-           [AccountType],
+           [AccountKind],
+           [AssetType],
            [CurrencyCode],
            [Balance],
            [Provider],
            [DateCreated],
            [IsActive]
     FROM [dbo].[Account]
-    WHERE [AppUserId] = @AppUserId AND [AccountType] = @AccountType AND [CurrencyCode] = @CurrencyCode AND
+    WHERE [AppUserId] = @AppUserId AND [AccountKind] = @AccountKind AND [AssetType] = @AssetType AND [CurrencyCode] = @CurrencyCode AND
             [Provider ]= @Provider;
 END

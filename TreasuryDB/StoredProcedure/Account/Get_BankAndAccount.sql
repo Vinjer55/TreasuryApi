@@ -1,5 +1,7 @@
-﻿CREATE PROCEDURE [dbo].[Get_AccountById]
-    @Id INT
+﻿CREATE PROCEDURE [dbo].[Get_BankAndAccount]
+    @Id INT,
+    @AppUserId INT,
+    @CurrencyCode NVARCHAR(10)
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -7,13 +9,14 @@ BEGIN
     SELECT [Id],
            [AppUserId],
            [AccountKind],
-           [AssetType],
            [CurrencyCode],
            [Balance],
            [Provider],
            [DateCreated],
            [IsActive]
     FROM [dbo].[Account]
-    WHERE [Id] = @Id;
+    WHERE [Id] = @Id 
+      AND [AppUserId] = @AppUserId
+      AND [CurrencyCode] = @CurrencyCode;
 END;
 

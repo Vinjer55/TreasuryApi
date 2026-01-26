@@ -7,6 +7,7 @@ using Providers.Corporation;
 using Providers.User;
 using Services.Account;
 using Services.Corporation;
+using Services.Transfer;
 using Services.User;
 using StackExchange.Redis;
 using TreasuryApi.Provider;
@@ -63,6 +64,7 @@ builder.Services.AddScoped<ICorporationService, CorporationService>();
 builder.Services.AddScoped<ICorporationProvider, CorporationProvider>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IAccountProvider, AccountProvider>();
+builder.Services.AddScoped<ITransferService, TransferService>();
 
 //auth scheme
 //auth scheme
@@ -91,6 +93,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 // Add Dapper context
 builder.Services.AddSingleton<SqlConnectionFactory>();
+
+// Add the CoinGecko services
+builder.Services.AddCoinGecko();
 
 // add Custom Authorization
 builder.Services.AddSingleton<

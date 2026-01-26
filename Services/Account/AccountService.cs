@@ -45,7 +45,9 @@ namespace Services.Account
 
             // Check duplicate ONLY if relevant fields are changing
             if (
-                request.AccountType != null ||
+
+                request.AccountKind != null ||
+                request.AssetType != null ||
                 request.CurrencyCode != null ||
                 request.Provider != null
             )
@@ -54,7 +56,8 @@ namespace Services.Account
                     userId,
                     new CreateAccountRequest
                     {
-                        AccountType = request.AccountType ?? existingAccount.AccountType,
+                        AccountKind = request.AccountKind ?? existingAccount.AccountKind,
+                        AssetType = request.AssetType ?? existingAccount.AssetType,
                         CurrencyCode = request.CurrencyCode ?? existingAccount.CurrencyCode,
                         Provider = request.Provider ?? existingAccount.Provider
                     });
@@ -69,7 +72,8 @@ namespace Services.Account
             var accountToUpdate = new AccountModel
             {
                 Id = existingAccount.Id,
-                AccountType = request.AccountType ?? existingAccount.AccountType,
+                AccountKind = request.AccountKind ?? existingAccount.AccountKind,
+                AssetType = request.AssetType ?? existingAccount.AssetType,
                 CurrencyCode = request.CurrencyCode ?? existingAccount.CurrencyCode,
                 Provider = request.Provider ?? existingAccount.Provider,
                 Balance = request.Balance ?? existingAccount.Balance

@@ -1,6 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Update_Account]
     @Id INT,
-    @AccountType NVARCHAR(20),
+    @AccountKind NVARCHAR(20),
+    @AssetType NVARCHAR(10),
     @CurrencyCode NVARCHAR(10),
     @Balance DECIMAL(38, 18),
     @Provider NVARCHAR(50)
@@ -16,8 +17,9 @@ BEGIN
     END
 
     UPDATE [dbo].[Account]
-    SET 
-        [AccountType] = COALESCE(@AccountType, [AccountType]),
+    SET
+        [AccountKind] = COALESCE(@AccountKind, [AccountKind]),
+        [AssetType] = COALESCE(@AssetType, [AssetType]),
         [CurrencyCode] = COALESCE(@CurrencyCode, [CurrencyCode]),
         [Balance] = COALESCE(@Balance, [Balance]),
         [Provider] = COALESCE(@Provider, [Provider])

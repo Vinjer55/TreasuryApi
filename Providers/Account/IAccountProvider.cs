@@ -11,5 +11,7 @@ namespace Providers.Account
         Task<AccountModel> GetAccountById(int id);
         Task UpdateAccount(AccountModel account);
         Task DeleteAccount(int accountId);
+        Task<AccountModel> GetBankAndAccount(string userId, int bank, string account);
+        Task UpdateAmount(string userId, int accountId, decimal amount);
     }
 }

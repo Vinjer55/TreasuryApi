@@ -6,7 +6,8 @@ BEGIN
 
     SELECT [Id],
            [AppUserId],
-           [AccountType],
+           [AccountKind],
+           [AssetType],
            [CurrencyCode],
            [Balance],
            [Provider],

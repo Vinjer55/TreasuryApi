@@ -4,7 +4,8 @@
     {
         public int Id { get; set; }
         public int AppUserId { get; set; }
-        public string AccountType { get; set; }
+        public string AccountKind { get; set; }
+        public string AssetType { get; set; }
         public string CurrencyCode { get; set; }
         public decimal Balance { get; set; }
         public string Provider { get; set; }

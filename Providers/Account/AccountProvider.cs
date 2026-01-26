@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Identity.Client;
 using Microsoft.VisualBasic;
 using Models.DBModel;
 using Models.Request;
@@ -15,7 +16,8 @@ namespace Providers.Account
                 var parameters = new
                 {
                     AppUserId = userId,
-                    AccountType = request.AccountType,
+                    AccountKind = request.AccountKind,
+                    AssetType = request.AssetType,
                     CurrencyCode = request.CurrencyCode,
                     Balance = request.Balance,
                     Provider = request.Provider
@@ -39,7 +41,8 @@ namespace Providers.Account
                     new
                     {
                         AppUserId = userId,
-                        AccountType = request.AccountType,
+                        AccountKind = request.AccountKind,
+                        AssetType = request.AssetType,
                         CurrencyCode = request.CurrencyCode,
                         Provider = request.Provider
                     },
@@ -88,7 +91,8 @@ namespace Providers.Account
                 var parameters = new
                 {
                     Id = account.Id,
-                    AccountType = account.AccountType,
+                    AccountKind = account.AccountKind,
+                    AssetType = account.AssetType,
                     CurrencyCode = account.CurrencyCode,
                     Balance = account.Balance,
                     Provider = account.Provider
@@ -113,5 +117,43 @@ namespace Providers.Account
                 );
             }
         }
+
+        public async Task<AccountModel> GetBankAndAccount(string userId, int bankId, string account)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var userAccount = await conn.QuerySingleOrDefaultAsync<AccountModel>(
+                    "Get_BankAndAccount",
+                    new
+                    {
+                        Id = bankId,
+                        AppUserId = userId,
+                        CurrencyCode = account
+                    },
+                    commandType: CommandType.StoredProcedure
+                );
+                return userAccount;
+            }
+        }
+
+        public async Task UpdateAmount(string userId, int accountId, decimal amount)
+        {
+            using (var conn = _sqlContext.CreateConnection())
+            {
+                var parameters = new
+                {
+                    Id = accountId,
+                    AppUserId = userId,
+                    Balance = amount
+                };
+
+                await conn.ExecuteAsync(
+                    "Update_Amount",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
+        }
+
     }
 }
