@@ -5,6 +5,8 @@ using Microsoft.VisualBasic;
 using Models.Request;
 using Models.Response;
 using Providers.Account;
+using System.Globalization;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace Services.Transfer
@@ -196,6 +198,81 @@ namespace Services.Transfer
                 Currency = userWallet.CurrencyCode,
                 NewWalletBalance = userWallet.Balance,
                 WalletId = userWallet.Id
+            };
+        }
+
+        public async Task<CryptoToCryptoResponse> CryptoToCrypto(string userId, CryptoToCryptoRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.FromAsset))
+                throw new ArgumentException("From Asset is required");
+
+            if (string.IsNullOrWhiteSpace(request.ToAsset))
+                throw new ArgumentException("To Asset is required");
+
+            var url = $"https://api.freecryptoapi.com/v1/getData?symbol={request.FromAsset}+{request.ToAsset}";
+
+            using var http = new HttpClient();
+            http.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", "8cutnx4jhrrqgsdsunyf");
+
+            var response = await http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to fetch price");
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            var symbols = doc.RootElement.GetProperty("symbols");
+
+            var from = symbols
+                .EnumerateArray()
+                .First(x => x.GetProperty("symbol").GetString() == request.FromAsset.ToUpper());
+
+            var to = symbols
+                .EnumerateArray()
+                .First(x => x.GetProperty("symbol").GetString() == request.ToAsset.ToUpper());
+
+            decimal fromBtc = decimal.Parse(
+                from.GetProperty("last").GetString(),
+                CultureInfo.InvariantCulture
+            );
+
+            decimal toBtc = decimal.Parse(
+                to.GetProperty("last").GetString(),
+                CultureInfo.InvariantCulture
+            );
+
+            decimal convertedAmount = request.Amount * fromBtc / toBtc;
+
+            // Wallet updates
+            var fromWallet = await _accountProvider.GetAccountByIdAndCurrencyCode(
+                userId, request.FromWalletId, request.FromAsset
+            );
+            if (fromWallet == null)
+                throw new Exception("From wallet not found");
+
+            if (fromWallet.Balance < request.Amount)
+                throw new Exception("Insufficient balance");
+
+            var toWallet = await _accountProvider.GetAccountByIdAndCurrencyCode(
+                userId, request.ToWalletId, request.ToAsset
+            );
+            if (toWallet == null)
+                throw new Exception("To wallet not found");
+
+            fromWallet.Balance -= request.Amount;
+            toWallet.Balance += convertedAmount;
+
+            await _accountProvider.UpdateAmount(userId, fromWallet.Id, fromWallet.Balance);
+            await _accountProvider.UpdateAmount(userId, toWallet.Id, toWallet.Balance);
+
+            return new CryptoToCryptoResponse
+            {
+                ConvertedAmount = convertedAmount,
+                FromAsset = request.FromAsset,
+                ToAsset = request.ToAsset,
+                NewFromBalance = fromWallet.Balance,
+                NewToBalance = toWallet.Balance
             };
         }
     }
