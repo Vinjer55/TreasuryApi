@@ -84,7 +84,7 @@
     <Build Include="StoredProcedure\Account\Get_AccountById.sql" />
     <Build Include="StoredProcedure\Account\Update_Account.sql" />
     <Build Include="StoredProcedure\Account\Delete_Account.sql" />
-    <Build Include="StoredProcedure\Account\Get_BankAndAccount.sql" />
+    <Build Include="StoredProcedure\Account\Get_AccountByIdAndCurrencyCode.sql" />
     <Build Include="StoredProcedure\Account\Update_Amount.sql" />
   </ItemGroup>
 </Project>

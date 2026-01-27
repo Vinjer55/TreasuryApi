@@ -74,5 +74,25 @@ namespace TreasuryApi.Controllers
             return Unauthorized("Invalid authentication method.");
         }
 
+
+        [HttpPost("Fiat-To-Crypto")]
+        public async Task<IActionResult> FiatToCrypto(FiatToCryptoRequest request)
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+            var corporationId = User.FindFirst("CorpId")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User ID not found in token");
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var result = await _transferService.FiatToCrypto(userId, request);
+                return Ok(result);
+            }
+
+            return Unauthorized("Invalid authentication method.");
+        }
+
     }
 }

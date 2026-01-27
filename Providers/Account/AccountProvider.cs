@@ -118,12 +118,12 @@ namespace Providers.Account
             }
         }
 
-        public async Task<AccountModel> GetBankAndAccount(string userId, int bankId, string account)
+        public async Task<AccountModel> GetAccountByIdAndCurrencyCode(string userId, int bankId, string account)
         {
             using (var conn = _sqlContext.CreateConnection())
             {
                 var userAccount = await conn.QuerySingleOrDefaultAsync<AccountModel>(
-                    "Get_BankAndAccount",
+                    "Get_AccountByIdAndCurrencyCode",
                     new
                     {
                         Id = bankId,

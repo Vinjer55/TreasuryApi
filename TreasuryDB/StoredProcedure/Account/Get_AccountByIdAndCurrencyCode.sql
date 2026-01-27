@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[Get_BankAndAccount]
+﻿CREATE PROCEDURE [dbo].[Get_AccountByIdAndCurrencyCode]
     @Id INT,
     @AppUserId INT,
     @CurrencyCode NVARCHAR(10)

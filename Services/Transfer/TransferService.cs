@@ -115,33 +115,87 @@ namespace Services.Transfer
             
             var convertedAmount = request.Amount * price;
 
-            // Bank account update
-            var userBank = await _accountProvider.GetBankAndAccount(userId, request.BankId, request.Account);
+            // Get Wallet (crypto)
+            string symbol = request.Asset.Split('-')[0].ToUpper();
+            var userWallet = await _accountProvider.GetAccountByIdAndCurrencyCode(userId, request.WalletId, symbol);
+            if (userWallet == null)
+                throw new Exception("Wallet not found");
+
+            // Get Bank (fiat)
+            var userBank = await _accountProvider.GetAccountByIdAndCurrencyCode(userId, request.BankId, request.Account);
             if (userBank == null)
                 throw new Exception("Bank account not found");
 
-            var updatedbalance = userBank.Balance += convertedAmount;
+            // Deduct crypto
+            userWallet.Balance -= request.Amount;
+            await _accountProvider.UpdateAmount(userId, userWallet.Id, userWallet.Balance);
 
-            await _accountProvider.UpdateAmount(userId, userBank.Id, updatedbalance);
-
-            // Wallet account update
-            string symbol = request.Asset.Split('-')[0];
-            symbol = symbol.ToUpper();
-
-            var userWallet = await _accountProvider.GetBankAndAccount(userId, request.WalletId, symbol);
-            if (userBank == null)
-                throw new Exception("Bank account not found");
-
-            var updatedbalanceWallet = userWallet.Balance -= request.Amount;
-
-            await _accountProvider.UpdateAmount(userId, userWallet.Id, updatedbalanceWallet);
+            // Add fiat
+            userBank.Balance += convertedAmount;
+            await _accountProvider.UpdateAmount(userId, userBank.Id, userBank.Balance);
 
             return new CryptoToFiatResponse
             {
                 ConvertedAmount = convertedAmount,
                 Currency = userBank.CurrencyCode,
-                NewBankBalance = updatedbalance,
+                NewBankBalance = userBank.Balance,
                 BankAccountId = userBank.Id
+            };
+        }
+
+        public async Task<FiatToCryptoResponse> FiatToCrypto(string userId, FiatToCryptoRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Asset))
+                throw new ArgumentException("Asset is required");
+
+            if (string.IsNullOrWhiteSpace(request.Account))
+                throw new ArgumentException("Fiat currency is required");
+
+            var url = $"https://api.coinpaprika.com/v1/tickers/{request.Asset}?quotes={request.Account.ToUpper()}";
+
+            using var http = new HttpClient();
+
+            var response = await http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to fetch price from CoinPaprika");
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            using var doc = JsonDocument.Parse(json);
+            var price = doc
+                .RootElement
+                .GetProperty("quotes")
+                .GetProperty(request.Account.ToUpper())
+                .GetProperty("price")
+                .GetDecimal();
+
+            var cryptoAmount = request.Amount / price;
+
+            // Get Bank (fiat)
+            var userBank = await _accountProvider.GetAccountByIdAndCurrencyCode(userId, request.BankId, request.Account);
+            if (userBank == null)
+                throw new Exception("Bank account not found");
+
+            // Get Wallet (crypto)
+            string symbol = request.Asset.Split('-')[0].ToUpper();
+            var userWallet = await _accountProvider.GetAccountByIdAndCurrencyCode(userId, request.WalletId, symbol);
+            if (userWallet == null)
+                throw new Exception("Wallet not found");
+
+            // Deduct fiat
+            userBank.Balance -= request.Amount;
+            await _accountProvider.UpdateAmount(userId, userBank.Id, userBank.Balance);
+
+            // Add crypto
+            userWallet.Balance += cryptoAmount;
+            await _accountProvider.UpdateAmount(userId, userWallet.Id, userWallet.Balance);
+
+            return new FiatToCryptoResponse
+            {
+                ConvertedAmount = cryptoAmount,
+                Currency = userWallet.CurrencyCode,
+                NewWalletBalance = userWallet.Balance,
+                WalletId = userWallet.Id
             };
         }
     }
