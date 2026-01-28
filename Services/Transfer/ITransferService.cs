@@ -10,6 +10,7 @@ namespace Services.Transfer
         Task<CryptoToCryptoResponse> CryptoToCrypto(string userId, CryptoToCryptoRequest request);
         Task<CryptoToFiatResponse> CryptoToFiat(string userId, CryptoToFiatRequest request);
         Task<FiatToCryptoResponse> FiatToCrypto(string userId, FiatToCryptoRequest request);
+        Task<FiatToFiatResponse> FiatToFiat(string userId, FiatToFiatRequest request);
         Task<object> GetMarket(string currency);
     }
 }

@@ -113,5 +113,24 @@ namespace TreasuryApi.Controllers
             return Unauthorized("Invalid authentication method.");
         }
 
+        [HttpPost("Fiat-To-Fiat")]
+        public async Task<IActionResult> FiatToFiat(FiatToFiatRequest request)
+        {
+            // Get user id from token (example: from "sub" or "userId" claim)
+            var userId = User.FindFirst("UserId")?.Value;
+            var corporationId = User.FindFirst("CorpId")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized("User ID not found in token");
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var result = await _transferService.FiatToFiat(userId, request);
+                return Ok(result);
+            }
+
+            return Unauthorized("Invalid authentication method.");
+        }
+
     }
 }

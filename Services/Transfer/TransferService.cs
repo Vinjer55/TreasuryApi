@@ -140,8 +140,7 @@ namespace Services.Transfer
             {
                 ConvertedAmount = convertedAmount,
                 Currency = userBank.CurrencyCode,
-                NewBankBalance = userBank.Balance,
-                BankAccountId = userBank.Id
+                NewBankBalance = userBank.Balance
             };
         }
 
@@ -196,8 +195,7 @@ namespace Services.Transfer
             {
                 ConvertedAmount = cryptoAmount,
                 Currency = userWallet.CurrencyCode,
-                NewWalletBalance = userWallet.Balance,
-                WalletId = userWallet.Id
+                NewWalletBalance = userWallet.Balance
             };
         }
 
@@ -269,10 +267,64 @@ namespace Services.Transfer
             return new CryptoToCryptoResponse
             {
                 ConvertedAmount = convertedAmount,
-                FromAsset = request.FromAsset,
                 ToAsset = request.ToAsset,
-                NewFromBalance = fromWallet.Balance,
                 NewToBalance = toWallet.Balance
+            };
+        }
+
+        public async Task<FiatToFiatResponse> FiatToFiat(string userId, FiatToFiatRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.FromAccount))
+                throw new ArgumentException("From Account is required");
+
+            if (string.IsNullOrWhiteSpace(request.ToAccount))
+                throw new ArgumentException("To Account is required");
+
+            var url = $"https://api.frankfurter.dev/v1/latest?base=USD&symbols={request.FromAccount.ToUpper()},{request.ToAccount.ToUpper()}";
+
+            using var http = new HttpClient();
+
+            var response = await http.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to fetch fiat price");
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            var rates = doc.RootElement.GetProperty("rates");
+
+            var fromRate = rates.GetProperty(request.FromAccount.ToUpper()).GetDecimal();
+            var toRate = rates.GetProperty(request.ToAccount.ToUpper()).GetDecimal();
+
+            var convertedAmount = request.Amount * (toRate / fromRate);
+
+            // Wallet updates
+            var fromBank = await _accountProvider.GetAccountByIdAndCurrencyCode(
+                userId, request.FromBankId, request.FromAccount
+            );
+            if (fromBank == null)
+                throw new Exception("From wallet not found");
+
+            if (fromBank.Balance < request.Amount)
+                throw new Exception("Insufficient balance");
+
+            var toBank = await _accountProvider.GetAccountByIdAndCurrencyCode(
+                userId, request.ToBankId, request.ToAccount
+            );
+            if (toBank == null)
+                throw new Exception("To wallet not found");
+
+            fromBank.Balance -= request.Amount;
+            toBank.Balance += convertedAmount;
+
+            await _accountProvider.UpdateAmount(userId, fromBank.Id, fromBank.Balance);
+            await _accountProvider.UpdateAmount(userId, toBank.Id, toBank.Balance);
+
+            return new FiatToFiatResponse
+            {
+                ConvertedAmount = convertedAmount,
+                ToCurrency = request.ToAccount,
+                NewBankBalance = toBank.Balance
             };
         }
     }

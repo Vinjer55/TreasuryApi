@@ -1,9 +1,9 @@
 ﻿namespace Models.Response
 {
-    public class CryptoToFiatResponse
+    public class FiatToFiatResponse
     {
         public decimal ConvertedAmount { get; set; }
-        public string Currency { get; set; }
+        public string ToCurrency { get; set; }
         public decimal NewBankBalance { get; set; }
     }
 }
